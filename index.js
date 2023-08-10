@@ -54,8 +54,12 @@ const error = document.getElementById("error");
 const guardarUltimaBusqueda =
   JSON.parse(localStorage.getItem("ultimaBusqueda")) || {};
 
-const saveToLocalStorage = (busqueda) => {
-  localStorage.setItem("ultimaBusqueda", JSON.stringify(busqueda));
+const saveToLocalStorage = (pizza) => {
+  if (pizza) {
+    localStorage.setItem("ultimaBusqueda", JSON.stringify(pizza));
+  } else {
+    localStorage.removeItem("ultimaBusqueda");
+  }
 };
 
 const searchPizza = (e) => {
@@ -65,6 +69,7 @@ const searchPizza = (e) => {
     cardContainer.innerHTML = "";
     error.textContent = "Ingresar un numero";
     cardContainer.appendChild(error);
+    saveToLocalStorage(); // Clear local storage for invalid input
     return;
   }
 
@@ -74,6 +79,7 @@ const searchPizza = (e) => {
     cardContainer.innerHTML = " ";
     error.textContent = "Ingresar un numero valido";
     cardContainer.appendChild(error);
+    saveToLocalStorage(); // Clear local storage for invalid input
     return;
   }
 
@@ -86,14 +92,14 @@ const searchPizza = (e) => {
     </div>
     <img src="${pizza.imagen}" alt="pizza" />`;
 
-    saveToLocalStorage({ tipo: "pizza_encontrada", pizza });
+    saveToLocalStorage(pizza);
   }
 };
 
 const init = () => {
   formContainer.addEventListener("submit", searchPizza);
-  if (guardarUltimaBusqueda.tipo === "pizza_encontrada") {
-    const pizza = guardarUltimaBusqueda.pizza;
+  if (guardarUltimaBusqueda.id) {
+    const pizza = pizzas.find((pizza) => pizza.id == guardarUltimaBusqueda.id);
     if (pizza) {
       error.textContent = "";
       cardContainer.innerHTML = `
